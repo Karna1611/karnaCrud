@@ -1,0 +1,34 @@
+﻿@model List<karnaCrud.Models.UserModel>
+
+<h1>User List</h1>
+
+<a href="@Url.Action("Form", "Home")" class="btn btn-primary">Add</a>
+
+
+<table class="table table-bordered">
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone No</th>
+        <th>Gender</th>
+        <th>Address</th>
+    </tr>
+
+    @foreach (var user in Model)
+    {
+        <tr>
+            <td>@user.Name</td>
+            <td>@user.Email</td>
+            <td>@user.Phone</td>
+            <td>@user.Gender</td>
+            <td>@user.Address</td>
+            <td>
+                <a href="@Url.Action("Update", "Home", new { id = user.ID })" class="btn btn-primary">Edit</a>
+            </td>
+            <td>
+                <a href="@Url.Action("Delete","Home",new {id = user.ID})" class="btn btn-danger">Delete</a>
+            </td>
+            
+        </tr>
+    }
+</table>

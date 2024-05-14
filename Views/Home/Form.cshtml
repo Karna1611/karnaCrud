@@ -1,0 +1,53 @@
+﻿@model karnaCrud.Models.UserModel
+
+<div class="container py-5" " style="background-color: #f8f9fa;">
+    <h1 class="mb-4">Form</h1>
+
+    <form method="post" asp-action="Form">
+
+@if (Model != null)
+{
+            <input type="hidden" name="ID" value="@Model.ID" />
+}  
+
+        <div class="mb-3 col-sm-4">
+            <label for="Name" class="form-label">Name: </label>
+            @Html.TextBoxFor(m => m.Name, new { @class = "form-control", pattern = "[A-Za-z]+", placeholder = "Enter your name" })
+            @Html.ValidationMessageFor(m => m.Name, "", new { @class = "invalid-feedback" })
+        </div>
+
+        <div class="mb-3 col-sm-4">
+            <label for="Email" class="form-label">Email: </label>
+            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "abc@gmail.com" })
+            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "invalid-feedback" })
+        </div>
+
+        <div class="mb-3 col-sm-4">
+            <label for="Phone" class="form-label">Phone Number: </label>
+            @Html.TextBoxFor(m => m.Phone, new { @class = "form-control", type = "text", pattern = "^[0-9]+$", placeholder = "9879419974" })
+            @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "invalid-feedback" })
+        </div>
+
+        <div class="form-check mb-3">
+            <label for="Gender" class="form-check-label">Gender: </label>
+        </div>
+        <div class="form-check mb-3">
+            @Html.RadioButtonFor(m => m.Gender, "Male", new { @class = "form-check-input" })
+            <label class="form-check-label" for="Male">Male</label>
+        </div>
+        <div class="form-check mb-3">
+            @Html.RadioButtonFor(m => m.Gender, "Female", new { @class = "form-check-input" })
+            <label class="form-check-label" for="Female">Female</label>
+        </div>
+        @Html.ValidationMessageFor(m => m.Gender, "", new { @class = "invalid-feedback" })
+
+
+        <div class="mb-6">
+            <label for="Address">Address: </label>
+            @Html.TextAreaFor(m => m.Address, new { @class = "form-control", rows = "3", cols = "50" })
+            @Html.ValidationMessageFor(m => m.Address, "", new { @class = "invalid-feedback" })
+        </div>
+
+        <input type="submit" class="btn btn-primary" value="Submit" />
+    </form>
+</div>
