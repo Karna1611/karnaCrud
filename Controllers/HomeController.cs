@@ -55,19 +55,30 @@ namespace karnaCrud.Controllers
 
         }
         
-        public IActionResult Update(UserModel model)
+        public IActionResult Edit(int id)
         {
-            var existingUser = userList.FirstOrDefault(u => u.ID == model.ID);
-            if (existingUser == null)
+            var existingUser=userList.FirstOrDefault(u => u.ID == id);
+            if(existingUser != null) 
             {
-                return NotFound();
+                return View("Form",existingUser);
             }
-            existingUser.Name = model.Name;
-            existingUser.Email = model.Email;
-            existingUser.Phone = model.Phone;
-            existingUser.Gender = model.Gender;
-            existingUser.Address = model.Address;
-            return RedirectToAction("Index");
+            return NotFound();
+        }
+
+        [HttpPost]
+        public IActionResult Edit(UserModel model)
+        {
+            var existingUser=userList.FirstOrDefault(u => u.ID ==model.ID);
+            if (existingUser != null)
+            {
+                existingUser.Name=model.Name;
+                existingUser.Email=model.Email;
+                existingUser.Phone=model.Phone;
+                existingUser.Gender = model.Gender;
+                existingUser.Address=model.Address;
+                return RedirectToAction("Index");
+            }
+            return NotFound();
         }
 
     }
