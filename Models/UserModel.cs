@@ -1,17 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace karnaCrud.Models
 {
     public class UserModel
     {
         public int ID { get; set; }
-        
+
         [Required(ErrorMessage = "Name is required")]
         [RegularExpression("^[a-zA-Z]*$", ErrorMessage = "Only alphabetic characters are allowed in the name")]
         public string Name { get; set; }
         
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
+        [Remote("IsEmailUnique", "Home",ErrorMessage ="Email already exists")]
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Phone number is required")]

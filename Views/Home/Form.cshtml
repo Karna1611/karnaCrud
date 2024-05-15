@@ -18,8 +18,8 @@
 
         <div class="mb-3 col-sm-4">
             <label for="Email" class="form-label">Email: </label>
-            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "abc@gmail.com" })
-            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "invalid-feedback" })
+            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "abc@gmail.com"})
+            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
         </div>
 
         <div class="mb-3 col-sm-4">

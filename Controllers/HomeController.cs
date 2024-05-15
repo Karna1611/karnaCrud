@@ -1,5 +1,6 @@
 using karnaCrud.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace karnaCrud.Controllers
 {
@@ -20,7 +21,7 @@ namespace karnaCrud.Controllers
         {
             if(ModelState.IsValid)
             {
-                user.ID = ++nextId;
+               user.ID = ++nextId;
                 if (user.ID != 0)
                 {
                     var existingUser = userList.FirstOrDefault(u => u.ID == user.ID);
@@ -43,6 +44,13 @@ namespace karnaCrud.Controllers
             }
             
         }
+        
+        public JsonResult IsEmailUnique(string email)
+        {
+            bool isUnique = !userList.Any(u => u.Email == email);
+            return Json(isUnique);
+        }
+
         public IActionResult Delete(int id)
         {
 
