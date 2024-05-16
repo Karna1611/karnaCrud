@@ -44,12 +44,23 @@ namespace karnaCrud.Controllers
             }
             
         }
+
         
-        public JsonResult IsEmailUnique(string email)
+
+        [AcceptVerbs("Get","Post")]
+        public JsonResult IsEmailAvailable(string email)
         {
-            bool isUnique = !userList.Any(u => u.Email == email);
-            return Json(isUnique);
+            // Check if the email is already taken in the database
+            bool isAvailable = !userList.Any(u => u.Email == email);
+            return Json(isAvailable);
         }
+
+        public JsonResult isPhoneAvailable(string phone)
+        {
+            bool isAvailable= !userList.Any(u =>u.Phone == phone);
+            return Json(isAvailable);
+        }
+
 
         public IActionResult Delete(int id)
         {

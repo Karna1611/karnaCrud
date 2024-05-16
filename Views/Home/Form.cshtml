@@ -1,5 +1,9 @@
 ﻿@model karnaCrud.Models.UserModel
 
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.3.min.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.min.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js"></script>
+
 <div class="container py-5" " style="background-color: #f8f9fa;">
     <h1 class="mb-4">Form</h1>
 
@@ -25,7 +29,7 @@
         <div class="mb-3 col-sm-4">
             <label for="Phone" class="form-label">Phone Number: </label>
             @Html.TextBoxFor(m => m.Phone, new { @class = "form-control", type = "text", pattern = "^[0-9]+$", placeholder = "9879419974" })
-            @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "invalid-feedback" })
+@Html.ValidationMessageFor(m => m.Phone, "", new { @class = "text-danger" })
         </div>
 
         <div class="form-check mb-3">
