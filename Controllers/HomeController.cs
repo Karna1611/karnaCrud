@@ -12,18 +12,32 @@ namespace karnaCrud.Controllers
         {
             return View(userList);
         }
-        public IActionResult Form() //Form 
+        public IActionResult Form(int? id) //Form 
         {
-            return View();
+            if(id.HasValue)
+            {
+                var existingUser = userList.FirstOrDefault(u => u.ID == id.Value);
+                if (existingUser != null)
+                {
+                    return View(existingUser);
+                }
+                return NotFound();
+            }
+
+            return View(new UserModel());
         }
         [HttpPost]
         public IActionResult Form(UserModel user)
         {
             if(ModelState.IsValid)
             {
-               user.ID = ++nextId;
-                if (user.ID != 0)
-                {
+               if(user.ID==0)
+               {
+                    user.ID = ++nextId;
+                    userList.Add(user);
+               }
+               else
+               {
                     var existingUser = userList.FirstOrDefault(u => u.ID == user.ID);
                     if (existingUser != null)
                     {
@@ -32,32 +46,42 @@ namespace karnaCrud.Controllers
                         existingUser.Phone = user.Phone;
                         existingUser.Gender = user.Gender;
                         existingUser.Address = user.Address;
-                        return RedirectToAction("Index");
+                        existingUser.Designation = user.Designation;
+                        
                     }
                 }
-                userList.Add(user);
                 return RedirectToAction("Index");
             }
             else
             {
-                return View("Form", user);
-            }
-            
+                return View(user);
+            }           
         }
-
-        
-
-        [AcceptVerbs("Get","Post")]
-        public JsonResult IsEmailAvailable(string email)
+        public JsonResult IsEmailAvailable(string email,int? id)
         {
-            // Check if the email is already taken in the database
-            bool isAvailable = !userList.Any(u => u.Email == email);
+            bool isAvailable;
+            if(id.HasValue)
+            {
+                isAvailable=!userList.Any(u => u.Email == email && u.ID !=id.Value);
+            }
+            else
+            {
+                isAvailable = !userList.Any(u => u.Email == email);
+            }
             return Json(isAvailable);
         }
 
-        public JsonResult isPhoneAvailable(string phone)
+        public JsonResult isPhoneAvailable(string phone,int? id)
         {
-            bool isAvailable= !userList.Any(u =>u.Phone == phone);
+            bool isAvailable;
+            if(id.HasValue)
+            {
+                isAvailable=!userList.Any(u => u.Phone == phone && u.ID !=id.Value);
+            }
+            else
+            {
+                isAvailable =!userList.Any(u =>u.Phone == phone);
+            }
             return Json(isAvailable);
         }
 
@@ -73,31 +97,17 @@ namespace karnaCrud.Controllers
             return RedirectToAction("Index");
 
         }
-        
+
+
         public IActionResult Edit(int id)
         {
-            var existingUser=userList.FirstOrDefault(u => u.ID == id);
-            if(existingUser != null) 
-            {
-                return View("Form",existingUser);
-            }
-            return NotFound();
+            return RedirectToAction("Form", new { id });
         }
 
         [HttpPost]
         public IActionResult Edit(UserModel model)
         {
-            var existingUser=userList.FirstOrDefault(u => u.ID ==model.ID);
-            if (existingUser != null)
-            {
-                existingUser.Name=model.Name;
-                existingUser.Email=model.Email;
-                existingUser.Phone=model.Phone;
-                existingUser.Gender = model.Gender;
-                existingUser.Address=model.Address;
-                return RedirectToAction("Index");
-            }
-            return NotFound();
+            return RedirectToAction("Form",new {id=model.ID});
         }
 
     }

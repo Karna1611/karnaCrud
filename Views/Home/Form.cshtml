@@ -22,14 +22,14 @@
 
         <div class="mb-3 col-sm-4">
             <label for="Email" class="form-label">Email: </label>
-            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "abc@gmail.com"})
+            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "abc@gmail.com" })
             @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
         </div>
 
         <div class="mb-3 col-sm-4">
             <label for="Phone" class="form-label">Phone Number: </label>
             @Html.TextBoxFor(m => m.Phone, new { @class = "form-control", type = "text", pattern = "^[0-9]+$", placeholder = "9879419974" })
-@Html.ValidationMessageFor(m => m.Phone, "", new { @class = "text-danger" })
+            @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "text-danger" })
         </div>
 
         <div class="form-check mb-3">
@@ -45,12 +45,27 @@
         </div>
             @Html.ValidationMessageFor(m => m.Gender, "", new { @class = "invalid-feedback" })
 
-
         <div class="mb-6">
             <label for="Address">Address: </label>
             @Html.TextAreaFor(m => m.Address, new { @class = "form-control", rows = "3", cols = "50" })
             @Html.ValidationMessageFor(m => m.Address, "", new { @class = "invalid-feedback" })
         </div>
+
+        <div class="mb-3 col-sm-4">
+            <label for="Designation" class="form-label">Designation: </label>
+            @Html.DropDownListFor(m => m.Designation, new List<SelectListItem>
+            {
+            new SelectListItem { Text = "Select Designation", Value = "" },
+            new SelectListItem { Text = "Developer", Value = "Developer" },
+            new SelectListItem { Text = "Manager", Value = "Manager" },
+            new SelectListItem { Text = "Tester", Value = "Tester" },
+            new SelectListItem { Text = "Analyst", Value = "Analyst" }
+            }, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Designation, "", new { @class = "text-danger" })
+        </div>
+
+        
+
 
         <input type="submit" class="btn btn-primary" value="Submit" />
     </form>

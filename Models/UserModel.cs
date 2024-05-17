@@ -13,7 +13,7 @@ namespace karnaCrud.Models
 
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
-        [Remote(action: "IsEmailAvailable", controller:"Home",ErrorMessage ="Email already exists!")]
+        [Remote(action: "IsEmailAvailable", controller:"Home", AdditionalFields = "ID",ErrorMessage ="Email already exists!")]
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Phone number is required")]
@@ -21,7 +21,7 @@ namespace karnaCrud.Models
         [RegularExpression("^([0-9]{10})$", ErrorMessage = "Invalid Mobile Number.")]
         [MaxLength(10, ErrorMessage = "Phone number must be at most 10 characters long")]
         [MinLength(10, ErrorMessage = "Phone number must be at least 10 characters long")]
-        [Remote(action:"isPhoneAvailable",controller:"Home",ErrorMessage ="Phone number exists!")]
+        [Remote(action:"isPhoneAvailable",controller:"Home",AdditionalFields ="ID",ErrorMessage ="Phone number exists!")]
         public string Phone { get; set; }
 
         [Required(ErrorMessage = "Please select one gender")]
@@ -30,5 +30,12 @@ namespace karnaCrud.Models
         [Required(ErrorMessage = "Address is required")]
         [StringLength(1000, ErrorMessage = "Address cannot exceed 1000 characters")]
         public string Address { get; set; }
+
+        [Required(ErrorMessage ="Designation is required")]
+        public string Designation { get; set; }
+
+        
+        
+
     }
 }
