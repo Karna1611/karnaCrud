@@ -4,7 +4,6 @@
 
 <a href="@Url.Action("Form", "Home")" class="btn btn-primary">Add</a>
 
-
 <table class="table table-bordered">
     <tr>
         <th>Name</th>
@@ -13,8 +12,8 @@
         <th>Gender</th>
         <th>Address</th>
         <th>Designation</th>
+        <th>Hobbies</th>
         <th>Action</th>
-
     </tr>
 
     @foreach (var user in Model)
@@ -26,6 +25,15 @@
             <td>@user.Gender</td>
             <td>@user.Address</td>
             <td>@user.Designation</td>
+            <td>
+                @if (user.Hobbies != null && user.Hobbies.Any())
+                {
+                    foreach (var hobby in user.Hobbies)
+                    {
+                        <span>@hobby </span>
+                    }
+                }
+            </td>
             <td>
                 <a href="@Url.Action("Edit", "Home", new { id = user.ID })" class="btn btn-sm btn-primary me-2" onclick="return confirm('Are you sure you want to update this user?');">Edit</a>
                 <a href="@Url.Action("Delete","Home",new {id = user.ID})" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>

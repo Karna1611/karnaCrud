@@ -27,12 +27,19 @@ namespace karnaCrud.Controllers
             return View(new UserModel());
         }
         [HttpPost]
-        public IActionResult Form(UserModel user)
+        public IActionResult Form(UserModel user, string[] hobbies)
         {
             if(ModelState.IsValid)
             {
-               if(user.ID==0)
+                user.Hobbies = hobbies.ToList();
+                user.Email = user.Email.ToLower();
+                if (user.ID==0)
                {
+                    if (!IsEmailAvailable(user.Email, null))
+                    {
+                        ModelState.AddModelError(nameof(user.Email), "Email already exists!");
+                        return View(user);
+                    }
                     user.ID = ++nextId;
                     userList.Add(user);
                }
@@ -41,13 +48,22 @@ namespace karnaCrud.Controllers
                     var existingUser = userList.FirstOrDefault(u => u.ID == user.ID);
                     if (existingUser != null)
                     {
+                        if (existingUser.Email.ToLower() != user.Email)
+                        {
+                            // Email has changed, perform validation
+                            if (!IsEmailAvailable(user.Email, user.ID))
+                            {
+                                ModelState.AddModelError(nameof(user.Email), "Email already exists!");
+                                return View(user);
+                            }
+                        }
                         existingUser.Name = user.Name;
                         existingUser.Email = user.Email;
                         existingUser.Phone = user.Phone;
                         existingUser.Gender = user.Gender;
                         existingUser.Address = user.Address;
                         existingUser.Designation = user.Designation;
-                        
+                        existingUser.Hobbies = user.Hobbies;
                     }
                 }
                 return RedirectToAction("Index");
@@ -57,34 +73,17 @@ namespace karnaCrud.Controllers
                 return View(user);
             }           
         }
-        public JsonResult IsEmailAvailable(string email,int? id)
+        public bool IsEmailAvailable(string email, int? id)
         {
-            bool isAvailable;
-            if(id.HasValue)
-            {
-                isAvailable=!userList.Any(u => u.Email == email && u.ID !=id.Value);
-            }
-            else
-            {
-                isAvailable = !userList.Any(u => u.Email == email);
-            }
-            return Json(isAvailable);
+            return !userList.Any(u => u.Email.ToLower() == email.ToLower() && u.ID != id.Value);
         }
 
         public JsonResult isPhoneAvailable(string phone,int? id)
         {
             bool isAvailable;
-            if(id.HasValue)
-            {
-                isAvailable=!userList.Any(u => u.Phone == phone && u.ID !=id.Value);
-            }
-            else
-            {
-                isAvailable =!userList.Any(u =>u.Phone == phone);
-            }
+            isAvailable=!userList.Any(u => u.Phone == phone && u.ID !=id.Value);
             return Json(isAvailable);
         }
-
 
         public IActionResult Delete(int id)
         {

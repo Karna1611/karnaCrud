@@ -11,10 +11,15 @@ namespace karnaCrud.Models
         [RegularExpression("^[a-zA-Z]*$", ErrorMessage = "Only alphabetic characters are allowed in the name")]
         public string Name { get; set; }
 
+        private string email;
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
         [Remote(action: "IsEmailAvailable", controller:"Home", AdditionalFields = "ID",ErrorMessage ="Email already exists!")]
-        public string Email { get; set; }
+        public string Email
+        {
+            get => email;
+            set => email = value?.ToLower();
+        }
 
         [Required(ErrorMessage = "Phone number is required")]
         [DataType(DataType.PhoneNumber)]
@@ -34,7 +39,8 @@ namespace karnaCrud.Models
         [Required(ErrorMessage ="Designation is required")]
         public string Designation { get; set; }
 
-        
+        public List<string> Hobbies { get; set; } = new List<string>();
+
         
 
     }

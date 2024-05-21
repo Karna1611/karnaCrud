@@ -64,8 +64,26 @@
             @Html.ValidationMessageFor(m => m.Designation, "", new { @class = "text-danger" })
         </div>
 
-        
-
+        <div class="mb-3 col-sm-4">
+            <label for="Hobbies" class="form-label">Hobbies: </label>
+            <div class="form-check">
+                <input type="checkbox" name="Hobbies" value="Reading" class="form-check-input" id="hobbyReading" @(Model.Hobbies.Contains("Reading") ? "checked" : "") />
+                <label class="form-check-label" for="hobbyReading">Reading</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" name="Hobbies" value="Travelling" class="form-check-input" id="hobbyTravelling" @(Model.Hobbies.Contains("Travelling") ? "checked" : "") />
+                <label class="form-check-label" for="hobbyTravelling">Travelling</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" name="Hobbies" value="Sports" class="form-check-input" id="hobbySports" @(Model.Hobbies.Contains("Sports") ? "checked" : "") />
+                <label class="form-check-label" for="hobbySports">Sports</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" name="Hobbies" value="Music" class="form-check-input" id="hobbyMusic" @(Model.Hobbies.Contains("Music") ? "checked" : "") />
+                <label class="form-check-label" for="hobbyMusic">Music</label>
+            </div>
+                @Html.ValidationMessageFor(m => m.Hobbies, "", new { @class = "text-danger" })
+        </div>
 
         <input type="submit" class="btn btn-primary" value="Submit" />
     </form>
