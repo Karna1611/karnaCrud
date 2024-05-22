@@ -13,6 +13,7 @@
         <th>Address</th>
         <th>Designation</th>
         <th>Hobbies</th>
+        <th>Image</th>
         <th>Action</th>
     </tr>
 
@@ -32,6 +33,12 @@
                     {
                         <span>@hobby </span>
                     }
+                }
+            </td>
+            <td>
+                @if (!string.IsNullOrEmpty(user.ImagePath))
+                {
+                    <img src="@user.ImagePath" alt="Profile Picture" width="50" height="50" />
                 }
             </td>
             <td>

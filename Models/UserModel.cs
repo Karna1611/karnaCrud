@@ -42,6 +42,11 @@ namespace karnaCrud.Models
         public List<string> Hobbies { get; set; } = new List<string>();
 
         
+        public string ?ImagePath { get; set; }
+
+        [Required(ErrorMessage = "Profile picture is required.")]
+        public IFormFile ImageFile { get; set; }
+        
 
     }
 }

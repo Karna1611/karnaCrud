@@ -4,15 +4,14 @@
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.min.js"></script>
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js"></script>
 
-<div class="container py-5" " style="background-color: #f8f9fa;">
+<div class="container py-5" style="background-color: #f8f9fa;">
     <h1 class="mb-4">Form</h1>
 
-    <form method="post" asp-action="Form">
-
-@if (Model != null)
-{
-    <input type="hidden" name="ID" value="@Model.ID" />
-}
+    <form method="post" enctype="multipart/form-data" asp-action="Form">
+        @if (Model != null)
+        {
+            <input type="hidden" name="ID" value="@Model.ID" />
+        }
 
         <div class="mb-3 col-sm-4">
             <label for="Name" class="form-label">Name: </label>
@@ -43,8 +42,8 @@
             @Html.RadioButtonFor(m => m.Gender, "Female", new { @class = "form-check-input" })
             <label class="form-check-label" for="Female">Female</label>
         </div>
-            @Html.ValidationMessageFor(m => m.Gender, "", new { @class = "invalid-feedback" })
-
+        @Html.ValidationMessageFor(m => m.Gender, "", new { @class = "invalid-feedback" })
+        
         <div class="mb-6">
             <label for="Address">Address: </label>
             @Html.TextAreaFor(m => m.Address, new { @class = "form-control", rows = "3", cols = "50" })
@@ -82,8 +81,22 @@
                 <input type="checkbox" name="Hobbies" value="Music" class="form-check-input" id="hobbyMusic" @(Model.Hobbies.Contains("Music") ? "checked" : "") />
                 <label class="form-check-label" for="hobbyMusic">Music</label>
             </div>
-                @Html.ValidationMessageFor(m => m.Hobbies, "", new { @class = "text-danger" })
+            @Html.ValidationMessageFor(m => m.Hobbies, "", new { @class = "text-danger" })
         </div>
+
+
+        <div class="mb-3">
+            <label for="ImageFile" class="form-label">Profile Picture: </label>
+            <input type="file" class="form-control" id="ImageFile" name="ImageFile">
+            @Html.ValidationMessageFor(m => m.ImageFile, "", new { @class = "text-danger" })
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.ImagePath))
+        {
+            <div class="mb-3">
+                <img src="@Model.ImagePath" alt="Profile Picture" width="150" height="150" />
+            </div>
+        }
 
         <input type="submit" class="btn btn-primary" value="Submit" />
     </form>
