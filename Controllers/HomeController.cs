@@ -46,12 +46,13 @@ namespace karnaCrud.Controllers
             {
                 if (imageFile != null && imageFile.Length > 0)
                 {
+                    if (imageFile.Length > 2 * 1024 * 1024) // 2MB in bytes
+                    {
+                        ModelState.AddModelError(nameof(user.ImageFile), "File size must not exceed 2MB.");
+                        return View(user);
+                    }
                     // Save the uploaded image file
                     string uploadsFolder = Path.Combine(_environment.WebRootPath, "images");
-                    if (!Directory.Exists(uploadsFolder))
-                    {
-                        Directory.CreateDirectory(uploadsFolder);
-                    }
                     string uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
                     string filePath = Path.Combine(uploadsFolder, uniqueFileName);
                     imageFile.CopyTo(new FileStream(filePath, FileMode.Create));

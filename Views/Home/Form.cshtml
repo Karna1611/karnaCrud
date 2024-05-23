@@ -3,6 +3,15 @@
 <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.3.min.js"></script>
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.min.js"></script>
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    function validateFileSize(input) {
+        const file = input.files[0];
+        if (file && file.size > 2 * 1024 * 1024) { // 2MB in bytes
+            alert("File size must not exceed 2MB.");
+            input.value = ""; // Clear the file input
+        }
+    }
+</script>
 
 <div class="container py-5" style="background-color: #f8f9fa;">
     <h1 class="mb-4">Form</h1>
@@ -87,7 +96,7 @@
 
         <div class="mb-3">
             <label for="ImageFile" class="form-label">Profile Picture: </label>
-            <input type="file" class="form-control" id="ImageFile" name="ImageFile">
+            <input type="file" class="form-control" id="ImageFile" name="ImageFile" onchange="validateFileSize(this)">
             @Html.ValidationMessageFor(m => m.ImageFile, "", new { @class = "text-danger" })
         </div>
 
