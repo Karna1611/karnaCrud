@@ -44,19 +44,43 @@ namespace karnaCrud.Controllers
         {
             if (ModelState.IsValid)
             {
+                var existingUser = userList.FirstOrDefault(u => u.ID == user.ID);
+                if (existingUser != null && !string.IsNullOrEmpty(existingUser.ImagePath))
+                {
+                    string oldImagePath = Path.Combine(_environment.WebRootPath, existingUser.ImagePath.TrimStart('/'));
+                    if (System.IO.File.Exists(oldImagePath))
+                    {
+                        System.IO.File.Delete(oldImagePath);
+                    }
+                }
+
                 if (imageFile != null && imageFile.Length > 0)
                 {
+                    var extension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();                    
+                    if (extension != ".jpg" && extension != ".jpeg")
+                    {
+                        ModelState.AddModelError(nameof(user.ImageFile), "Only JPG or JPEG files are allowed.");
+                        return View(user);
+                    }
                     if (imageFile.Length > 2 * 1024 * 1024) // 2MB in bytes
                     {
                         ModelState.AddModelError(nameof(user.ImageFile), "File size must not exceed 2MB.");
                         return View(user);
                     }
+                    
                     // Save the uploaded image file
                     string uploadsFolder = Path.Combine(_environment.WebRootPath, "images");
                     string uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
                     string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                    imageFile.CopyTo(new FileStream(filePath, FileMode.Create));
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        imageFile.CopyTo(fileStream);
+                    }
                     user.ImagePath = "/images/" + uniqueFileName;
+                }
+                else if(existingUser != null)
+                {
+                    user.ImagePath = existingUser.ImagePath; //Preserve the existing image path if no new image is uploaded
                 }
                 user.Hobbies = hobbies.ToList();
                 user.Email = user.Email.ToLower();
@@ -73,7 +97,6 @@ namespace karnaCrud.Controllers
                 }
                else
                {
-                    var existingUser = userList.FirstOrDefault(u => u.ID == user.ID);
                     if (existingUser != null)
                     {
                         if (existingUser.Email.ToLower() != user.Email)
@@ -120,6 +143,14 @@ namespace karnaCrud.Controllers
             var userToDelete = userList.FirstOrDefault(u => u.ID == id);
             if (userToDelete != null)
             {
+                if (!string.IsNullOrEmpty(userToDelete.ImagePath))
+                {
+                    string filePath = Path.Combine(_environment.WebRootPath, userToDelete.ImagePath.TrimStart('/'));
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                }
                 userList.Remove(userToDelete);
             }
             return RedirectToAction("Index");

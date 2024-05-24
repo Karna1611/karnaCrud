@@ -6,6 +6,12 @@
 <script>
     function validateFileSize(input) {
         const file = input.files[0];
+        const allowedExtensions = /(\.jpg|\.jpeg)$/i;
+        if (!allowedExtensions.exec(input.value)) {
+            alert('Please upload a file in .jpg or .jpeg format.');
+            input.value = ''; // Clear the file input
+            return false;
+        }
         if (file && file.size > 2 * 1024 * 1024) { // 2MB in bytes
             alert("File size must not exceed 2MB.");
             input.value = ""; // Clear the file input
