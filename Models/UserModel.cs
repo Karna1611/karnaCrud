@@ -35,6 +35,7 @@ namespace karnaCrud.Models
         [Required(ErrorMessage ="Designation is required")]
         public string Designation { get; set; }
 
+        [Required(ErrorMessage ="Please select at least one hobby")]
         public List<string> Hobbies { get; set; } = new List<string>();
 
         
@@ -42,7 +43,13 @@ namespace karnaCrud.Models
 
         [Required(ErrorMessage = "Profile picture is required.")]
         public IFormFile ImageFile { get; set; }
+
+        public int CountryId { get; set; }
         
+        public int StateId { get; set; }
+
+        public int CityId { get; set; }
+
 
     }
 }

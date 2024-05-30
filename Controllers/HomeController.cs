@@ -1,4 +1,5 @@
 using karnaCrud.Models;
+using karnaCrud.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using System.Reflection;
 
+
 namespace karnaCrud.Controllers
 {
     public class HomeController : Controller
@@ -16,10 +18,12 @@ namespace karnaCrud.Controllers
         private static List<UserModel> userList = new List<UserModel>();
         private static int nextId = 0;
         private readonly IWebHostEnvironment _environment;
+        private readonly StaticDataService _staticDataService;
 
-        public HomeController(IWebHostEnvironment environment)
+        public HomeController(IWebHostEnvironment environment, StaticDataService staticDataService)
         {
             _environment = environment;
+            _staticDataService = staticDataService;
         }
         public IActionResult Index()
         {
@@ -27,21 +31,20 @@ namespace karnaCrud.Controllers
         }
         public IActionResult Form(int? id) //Form 
         {
-            if(id.HasValue)
+            var viewModel = new UserFormViewModel
             {
-                var existingUser = userList.FirstOrDefault(u => u.ID == id.Value);
-                if (existingUser != null)
-                {
-                    return View(existingUser);
-                }
-                return NotFound();
-            }
-
-            return View(new UserModel());
+                User = id.HasValue ? userList.FirstOrDefault(u => u.ID == id.Value) ?? new UserModel() : new UserModel(),
+                Countries =_staticDataService.GetCountries(),
+                States=_staticDataService.GetStates(),
+                Cities=_staticDataService.GetCities()
+            };
+            return View(viewModel);
         }
+
         [HttpPost]
-        public IActionResult Form(UserModel user, string[] hobbies, IFormFile imageFile)
+        public IActionResult Form(UserFormViewModel viewModel, string[] hobbies, IFormFile imageFile)
         {
+            var user = viewModel.User;
             if (ModelState.IsValid)
             {
                 var existingUser = userList.FirstOrDefault(u => u.ID == user.ID);
@@ -60,12 +63,12 @@ namespace karnaCrud.Controllers
                     if (extension != ".jpg" && extension != ".jpeg")
                     {
                         ModelState.AddModelError(nameof(user.ImageFile), "Only JPG or JPEG files are allowed.");
-                        return View(user);
+                        return View(viewModel);
                     }
                     if (imageFile.Length > 2 * 1024 * 1024) // 2MB in bytes
                     {
                         ModelState.AddModelError(nameof(user.ImageFile), "File size must not exceed 2MB.");
-                        return View(user);
+                        return View(viewModel);
                     }
                     
                     // Save the uploaded image file
@@ -90,7 +93,7 @@ namespace karnaCrud.Controllers
                     if (!IsEmailAvailable(user.Email, null))
                     {
                         ModelState.AddModelError(nameof(user.Email), "Email already exists!");
-                        return View(user);
+                        return View(viewModel);
                     }
                     user.ID = ++nextId;
                     userList.Add(user);
@@ -105,7 +108,7 @@ namespace karnaCrud.Controllers
                             if (!IsEmailAvailable(user.Email, user.ID))
                             {
                                 ModelState.AddModelError(nameof(user.Email), "Email already exists!");
-                                return View(user);
+                                return View(viewModel);
                             }
                         }
                         existingUser.Name = user.Name;
@@ -116,13 +119,16 @@ namespace karnaCrud.Controllers
                         existingUser.Designation = user.Designation;
                         existingUser.Hobbies = user.Hobbies;
                         existingUser.ImagePath = user.ImagePath;
+                        existingUser.CountryId=user.CountryId;
+                        existingUser.StateId=user.StateId;
+                        existingUser.CityId=user.CityId;
                     }
                 }
                 return RedirectToAction("Index");
             }
             else
             {
-                return View(user);
+                return View(viewModel);
             }           
         }
         public bool IsEmailAvailable(string email, int? id)

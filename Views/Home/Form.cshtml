@@ -1,4 +1,5 @@
-﻿@model karnaCrud.Models.UserModel
+﻿@model karnaCrud.Models.UserFormViewModel
+
 
 <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.3.min.js"></script>
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.min.js"></script>
@@ -25,49 +26,49 @@
     <form method="post" enctype="multipart/form-data" asp-action="Form">
         @if (Model != null)
         {
-            <input type="hidden" name="ID" value="@Model.ID" />
+            <input type="hidden" name="ID" value="@Model.User.ID" />
         }
 
         <div class="mb-3 col-sm-4">
             <label for="Name" class="form-label">Name: </label>
-            @Html.TextBoxFor(m => m.Name, new { @class = "form-control", pattern = "[A-Za-z]+", placeholder = "Enter your name" })
-            @Html.ValidationMessageFor(m => m.Name, "", new { @class = "invalid-feedback" })
+            @Html.TextBoxFor(m => m.User.Name, new { @class = "form-control", pattern = "[A-Za-z]+", placeholder = "Enter your name" })
+            @Html.ValidationMessageFor(m => m.User.Name, "", new { @class = "invalid-feedback" })
         </div>
 
         <div class="mb-3 col-sm-4">
             <label for="Email" class="form-label">Email: </label>
-            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "abc@gmail.com" })
-            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+            @Html.TextBoxFor(m => m.User.Email, new { @class = "form-control", placeholder = "abc@gmail.com" })
+            @Html.ValidationMessageFor(m => m.User.Email, "", new { @class = "text-danger" })
         </div>
 
         <div class="mb-3 col-sm-4">
             <label for="Phone" class="form-label">Phone Number: </label>
-            @Html.TextBoxFor(m => m.Phone, new { @class = "form-control", type = "text", pattern = "^[0-9]+$", placeholder = "9879419974" })
-            @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "text-danger" })
+            @Html.TextBoxFor(m => m.User.Phone, new { @class = "form-control", type = "text", pattern = "^[0-9]+$", placeholder = "9879419974" })
+            @Html.ValidationMessageFor(m => m.User.Phone, "", new { @class = "text-danger" })
         </div>
 
         <div class="form-check mb-3">
             <label for="Gender" class="form-check-label">Gender: </label>
         </div>
         <div class="form-check mb-3">
-            @Html.RadioButtonFor(m => m.Gender, "Male", new { @class = "form-check-input" })
+            @Html.RadioButtonFor(m => m.User.Gender, "Male", new { @class = "form-check-input" })
             <label class="form-check-label" for="Male">Male</label>
         </div>
         <div class="form-check mb-3">
-            @Html.RadioButtonFor(m => m.Gender, "Female", new { @class = "form-check-input" })
+            @Html.RadioButtonFor(m => m.User.Gender, "Female", new { @class = "form-check-input" })
             <label class="form-check-label" for="Female">Female</label>
         </div>
-        @Html.ValidationMessageFor(m => m.Gender, "", new { @class = "invalid-feedback" })
+        @Html.ValidationMessageFor(m => m.User.Gender, "", new { @class = "invalid-feedback" })
         
         <div class="mb-6">
             <label for="Address">Address: </label>
-            @Html.TextAreaFor(m => m.Address, new { @class = "form-control", rows = "3", cols = "50" })
-            @Html.ValidationMessageFor(m => m.Address, "", new { @class = "invalid-feedback" })
+            @Html.TextAreaFor(m => m.User.Address, new { @class = "form-control", rows = "3", cols = "50" })
+            @Html.ValidationMessageFor(m => m.User.Address, "", new { @class = "invalid-feedback" })
         </div>
 
         <div class="mb-3 col-sm-4">
             <label for="Designation" class="form-label">Designation: </label>
-            @Html.DropDownListFor(m => m.Designation, new List<SelectListItem>
+            @Html.DropDownListFor(m => m.User.Designation, new List<SelectListItem>
             {
             new SelectListItem { Text = "Select Designation", Value = "" },
             new SelectListItem { Text = "Developer", Value = "Developer" },
@@ -75,44 +76,67 @@
             new SelectListItem { Text = "Tester", Value = "Tester" },
             new SelectListItem { Text = "Analyst", Value = "Analyst" }
             }, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Designation, "", new { @class = "text-danger" })
+            @Html.ValidationMessageFor(m => m.User.Designation, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-3">
+            <label for="ImageFile" class="form-label">Profile Picture: </label>
+            <input type="file" class="form-control" id="ImageFile" name="ImageFile" onchange="validateFileSize(this)">
+            @Html.ValidationMessageFor(m => m.User.ImageFile, "", new { @class = "text-danger" })
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.User.ImagePath))
+        {
+            <div class="mb-3">
+                <img src="@Model.User.ImagePath" alt="Profile Picture" width="150" height="150" />
+            </div>
+        }
+
+        <div class="form-group">
+            <label asp-for="User.CountryId">Country</label>
+            @Html.DropDownListFor(m=>m.User.CountryId,new SelectList(Model.Countries,"Id","Name"),"Select Country",new { @class ="form-control"})
+            @Html.ValidationMessageFor(m=>m.User.CountryId,"",new {@class="text-danger" })
+        </div>
+
+        <div class="form-group">
+            <label asp-for="User.StateId">State</label>
+            @Html.DropDownListFor(m=>m.User.StateId,new SelectList(Model.States,"Id","Name"),"Select State",new { @class="form-control"})
+            @Html.ValidationMessageFor(m=>m.User.StateId,"",new {@class="text-danger"})
+        </div>
+
+        <div class="form-group">
+            <label asp-for="User.CityId">City</label>
+            @Html.DropDownListFor(m=>m.User.CityId,new SelectList(Model.Cities,"Id","Name"),"Select City",new { @class="form-control"})
+            @Html.ValidationMessageFor(m=>m.User.CityId,"",new {@class="text-danger"})
         </div>
 
         <div class="mb-3 col-sm-4">
             <label for="Hobbies" class="form-label">Hobbies: </label>
             <div class="form-check">
-                <input type="checkbox" name="Hobbies" value="Reading" class="form-check-input" id="hobbyReading" @(Model.Hobbies.Contains("Reading") ? "checked" : "") />
+                <input type="checkbox" name="Hobbies" value="Reading" class="form-check-input" id="hobbyReading" @(Model.User.Hobbies.Contains("Reading") ? "checked" : "") />
                 <label class="form-check-label" for="hobbyReading">Reading</label>
             </div>
             <div class="form-check">
-                <input type="checkbox" name="Hobbies" value="Travelling" class="form-check-input" id="hobbyTravelling" @(Model.Hobbies.Contains("Travelling") ? "checked" : "") />
+                <input type="checkbox" name="Hobbies" value="Travelling" class="form-check-input" id="hobbyTravelling" @(Model.User.Hobbies.Contains("Travelling") ? "checked" : "") />
                 <label class="form-check-label" for="hobbyTravelling">Travelling</label>
             </div>
             <div class="form-check">
-                <input type="checkbox" name="Hobbies" value="Sports" class="form-check-input" id="hobbySports" @(Model.Hobbies.Contains("Sports") ? "checked" : "") />
+                <input type="checkbox" name="Hobbies" value="Sports" class="form-check-input" id="hobbySports" @(Model.User.Hobbies.Contains("Sports") ? "checked" : "") />
                 <label class="form-check-label" for="hobbySports">Sports</label>
             </div>
             <div class="form-check">
-                <input type="checkbox" name="Hobbies" value="Music" class="form-check-input" id="hobbyMusic" @(Model.Hobbies.Contains("Music") ? "checked" : "") />
+                <input type="checkbox" name="Hobbies" value="Music" class="form-check-input" id="hobbyMusic" @(Model.User.Hobbies.Contains("Music") ? "checked" : "") />
                 <label class="form-check-label" for="hobbyMusic">Music</label>
             </div>
-            @Html.ValidationMessageFor(m => m.Hobbies, "", new { @class = "text-danger" })
+            @Html.ValidationMessageFor(m => m.User.Hobbies, "", new { @class = "text-danger" })
         </div>
-
-
-        <div class="mb-3">
-            <label for="ImageFile" class="form-label">Profile Picture: </label>
-            <input type="file" class="form-control" id="ImageFile" name="ImageFile" onchange="validateFileSize(this)">
-            @Html.ValidationMessageFor(m => m.ImageFile, "", new { @class = "text-danger" })
-        </div>
-
-        @if (!string.IsNullOrEmpty(Model.ImagePath))
-        {
-            <div class="mb-3">
-                <img src="@Model.ImagePath" alt="Profile Picture" width="150" height="150" />
-            </div>
-        }
 
         <input type="submit" class="btn btn-primary" value="Submit" />
     </form>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
