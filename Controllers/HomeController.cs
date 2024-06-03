@@ -9,6 +9,7 @@ using System;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using System.Reflection;
+using static karnaCrud.Models.UserFormViewModel;
 
 
 namespace karnaCrud.Controllers
@@ -34,11 +35,24 @@ namespace karnaCrud.Controllers
             var viewModel = new UserFormViewModel
             {
                 User = id.HasValue ? userList.FirstOrDefault(u => u.ID == id.Value) ?? new UserModel() : new UserModel(),
-                Countries =_staticDataService.GetCountries(),
-                States=_staticDataService.GetStates(),
-                Cities=_staticDataService.GetCities()
+                Countries = _staticDataService.GetCountries(),
+                States=new List<State>(),
+                Cities=new List<City>()
             };
             return View(viewModel);
+        }
+        [HttpGet]
+        public IActionResult GetStates(int countryId)
+        {
+            var states = _staticDataService.GetStatesByCountryId(countryId);
+            return Json(states);
+        }
+
+        [HttpGet]
+        public IActionResult GetCities(int stateId)
+        {
+            var cities = _staticDataService.GetCitiesByStateId(stateId);
+            return Json(cities);
         }
 
         [HttpPost]

@@ -1,10 +1,13 @@
 ﻿@model karnaCrud.Models.UserFormViewModel
-
+@using karnaCrud.Models
+@using System.Collections.Generic
+@using static karnaCrud.Models.UserFormViewModel
 
 <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.3.min.js"></script>
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.min.js"></script>
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js"></script>
 <script>
+    // File size validation function
     function validateFileSize(input) {
         const file = input.files[0];
         const allowedExtensions = /(\.jpg|\.jpeg)$/i;
@@ -18,7 +21,65 @@
             input.value = ""; // Clear the file input
         }
     }
+    $(document).ready(function () { 
+       $('#stateDropdown').prop('disabled', true);
+       $('#cityDropdown').prop('disabled', true);
+
+        $('#countryDropdown').change(function () {
+            var countryId = $(this).val();
+            if (countryId) {
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetStates","Home")',
+                    data: { countryId: countryId },
+                    success: function (states) {
+                        $('#stateDropdown').empty();
+                        $('#stateDropdown').append($('<option>').val('').text('Select State'));
+                        $.each(states, function (i, state) {
+                            console.log("State: ", state);
+                            if (state.name && state.name.trim() !== '') {
+                                $('#stateDropdown').append($('<option>').val(state.Id).text(state.name));
+                            }
+                        });
+                        $('#stateDropdown').prop('disabled', false); //Enable State Dropdown
+                        $('#cityDropdown').empty(); //Clear city dropdown
+                        $('#cityDropdown').prop('disabled', true); //Disable City Dropdown
+                    }
+                });
+            } else {
+                //If no country is selected, disable State and City dropdowns
+                $('#stateDropdown').empty();
+                $('#stateDropdown').prop('disabled', true);
+                $('cityDropdown').empty();
+                $('cityDropdown').prop('disabled', true);
+            }
+        });
+
+        $('#stateDropdown').change(function () {
+            var stateId = $(this).val();
+            if (stateId) {
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetCities","Home")',
+                    data: { stateId: stateId },
+                    success: function (cities) {
+                        $('#cityDropdown').empty();
+                        $('#cityDropdown').append($('<option>').val('').text('Select City'));
+                        $.each(cities, function (i, city) {
+                            $('#cityDropdown').append($('<option>').val(city.Id).text(city.Name));
+                        });
+                        $('#cityDropdown').prop('disabled', false);
+                    }
+                });
+            } else {
+                $('#cityDropdown').empty();
+                $('#cityDropdown').prop('disabled', true);
+            }
+        });
+    });
+    
 </script>
+
 
 <div class="container py-5" style="background-color: #f8f9fa;">
     <h1 class="mb-4">Form</h1>
@@ -94,19 +155,21 @@
 
         <div class="form-group">
             <label asp-for="User.CountryId">Country</label>
-            @Html.DropDownListFor(m=>m.User.CountryId,new SelectList(Model.Countries,"Id","Name"),"Select Country",new { @class ="form-control"})
-            @Html.ValidationMessageFor(m=>m.User.CountryId,"",new {@class="text-danger" })
+            @Html.DropDownListFor(m => m.User.CountryId, new SelectList(Model.Countries, "Id", "Name"), "Select Country", new { @class = "form-control", id = "countryDropdown" })
+            @Html.ValidationMessageFor(m => m.User.CountryId, "", new { @class = "text-danger" })
         </div>
 
         <div class="form-group">
             <label asp-for="User.StateId">State</label>
-            @Html.DropDownListFor(m=>m.User.StateId,new SelectList(Model.States,"Id","Name"),"Select State",new { @class="form-control"})
-            @Html.ValidationMessageFor(m=>m.User.StateId,"",new {@class="text-danger"})
+            @Html.DropDownListFor(m => m.User.StateId, new SelectList(Enumerable.Empty<State>(), "Id", "Name"), "Select State", new { @class = "form-control", id = "stateDropdown" })
+            @Html.ValidationMessageFor(m => m.User.StateId, "", new { @class = "text-danger" })
         </div>
+
+
 
         <div class="form-group">
             <label asp-for="User.CityId">City</label>
-            @Html.DropDownListFor(m=>m.User.CityId,new SelectList(Model.Cities,"Id","Name"),"Select City",new { @class="form-control"})
+            @Html.DropDownListFor(m => m.User.CityId, new SelectList(Enumerable.Empty<City>(), "Id", "Name"), "Select City", new { @class = "form-control", id = "cityDropdown" })
             @Html.ValidationMessageFor(m=>m.User.CityId,"",new {@class="text-danger"})
         </div>
 
@@ -135,8 +198,3 @@
     </form>
 </div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
