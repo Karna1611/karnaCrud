@@ -7,7 +7,60 @@
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.14.0/jquery.validate.min.js"></script>
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js"></script>
 <script>
-    // File size validation function
+    $(document).ready(function () {
+        $('#stateDropdown').prop('disabled', true);
+        $('#cityDropdown').prop('disabled', true);
+
+        $('#countryDropdown').change(function () {
+            var countryId = $(this).val();
+            if (countryId) {
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetStates", "Home")',
+                    data: { countryId: countryId },
+                    success: function (states) {
+                        $('#stateDropdown').empty().append($('<option>').val('').text('Select State'));
+                        $.each(states, function (i, state) {
+                            $('#stateDropdown').append($('<option>').val(state.id).text(state.name));
+                        });
+                        $('#stateDropdown').prop('disabled', false);
+                        $('#cityDropdown').empty().prop('disabled', true);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching states: ", status, error);
+                    }
+                });
+            } else {
+                $('#stateDropdown').empty().prop('disabled', true);
+                $('#cityDropdown').empty().prop('disabled', true);
+            }
+        });
+
+        $('#stateDropdown').change(function () {
+            var stateId = $(this).val();
+            if (stateId) {
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetCities", "Home")',
+                    data: { stateId: stateId },
+                    success: function (cities) {
+                        $('#cityDropdown').empty().append($('<option>').val('').text('Select City'));
+                        $.each(cities, function (i, city) {
+                            $('#cityDropdown').append($('<option>').val(city.id).text(city.name));
+                        });
+                        $('#cityDropdown').prop('disabled', false);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching cities: ", status, error);
+                    }
+                });
+            } else {
+                $('#cityDropdown').empty().prop('disabled', true);
+            }
+        });
+    });
+
+
     function validateFileSize(input) {
         const file = input.files[0];
         const allowedExtensions = /(\.jpg|\.jpeg)$/i;
@@ -21,63 +74,6 @@
             input.value = ""; // Clear the file input
         }
     }
-    $(document).ready(function () { 
-       $('#stateDropdown').prop('disabled', true);
-       $('#cityDropdown').prop('disabled', true);
-
-        $('#countryDropdown').change(function () {
-            var countryId = $(this).val();
-            if (countryId) {
-                $.ajax({
-                    type: 'GET',
-                    url: '@Url.Action("GetStates","Home")',
-                    data: { countryId: countryId },
-                    success: function (states) {
-                        $('#stateDropdown').empty();
-                        $('#stateDropdown').append($('<option>').val('').text('Select State'));
-                        $.each(states, function (i, state) {
-                            console.log("State: ", state);
-                            if (state.name && state.name.trim() !== '') {
-                                $('#stateDropdown').append($('<option>').val(state.Id).text(state.name));
-                            }
-                        });
-                        $('#stateDropdown').prop('disabled', false); //Enable State Dropdown
-                        $('#cityDropdown').empty(); //Clear city dropdown
-                        $('#cityDropdown').prop('disabled', true); //Disable City Dropdown
-                    }
-                });
-            } else {
-                //If no country is selected, disable State and City dropdowns
-                $('#stateDropdown').empty();
-                $('#stateDropdown').prop('disabled', true);
-                $('cityDropdown').empty();
-                $('cityDropdown').prop('disabled', true);
-            }
-        });
-
-        $('#stateDropdown').change(function () {
-            var stateId = $(this).val();
-            if (stateId) {
-                $.ajax({
-                    type: 'GET',
-                    url: '@Url.Action("GetCities","Home")',
-                    data: { stateId: stateId },
-                    success: function (cities) {
-                        $('#cityDropdown').empty();
-                        $('#cityDropdown').append($('<option>').val('').text('Select City'));
-                        $.each(cities, function (i, city) {
-                            $('#cityDropdown').append($('<option>').val(city.Id).text(city.Name));
-                        });
-                        $('#cityDropdown').prop('disabled', false);
-                    }
-                });
-            } else {
-                $('#cityDropdown').empty();
-                $('#cityDropdown').prop('disabled', true);
-            }
-        });
-    });
-    
 </script>
 
 
@@ -170,7 +166,7 @@
         <div class="form-group">
             <label asp-for="User.CityId">City</label>
             @Html.DropDownListFor(m => m.User.CityId, new SelectList(Enumerable.Empty<City>(), "Id", "Name"), "Select City", new { @class = "form-control", id = "cityDropdown" })
-            @Html.ValidationMessageFor(m=>m.User.CityId,"",new {@class="text-danger"})
+            @Html.ValidationMessageFor(m => m.User.CityId, "", new { @class = "text-danger" })
         </div>
 
         <div class="mb-3 col-sm-4">

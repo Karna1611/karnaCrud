@@ -44,14 +44,14 @@ namespace karnaCrud.Controllers
         [HttpGet]
         public IActionResult GetStates(int countryId)
         {
-            var states = _staticDataService.GetStatesByCountryId(countryId);
+            var states = _staticDataService.GetStatesByCountryId(countryId).Select(s => new { s.Id, s.Name });
             return Json(states);
         }
 
         [HttpGet]
         public IActionResult GetCities(int stateId)
         {
-            var cities = _staticDataService.GetCitiesByStateId(stateId);
+            var cities = _staticDataService.GetCitiesByStateId(stateId).Select(c => new { c.Id, c.Name });
             return Json(cities);
         }
 
