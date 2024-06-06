@@ -32,12 +32,13 @@ namespace karnaCrud.Controllers
         }
         public IActionResult Form(int? id) //Form 
         {
+            var countries=_staticDataService.GetCountries();
             var viewModel = new UserFormViewModel
             {
                 User = id.HasValue ? userList.FirstOrDefault(u => u.ID == id.Value) ?? new UserModel() : new UserModel(),
-                Countries = _staticDataService.GetCountries(),
-                States=new List<State>(),
-                Cities=new List<City>()
+                Countries = countries,
+                States = new List<State>(),
+                Cities = new List<City>()
             };
             return View(viewModel);
         }
@@ -73,18 +74,6 @@ namespace karnaCrud.Controllers
 
                 if (imageFile != null && imageFile.Length > 0)
                 {
-                    var extension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();                    
-                    if (extension != ".jpg" && extension != ".jpeg")
-                    {
-                        ModelState.AddModelError(nameof(user.ImageFile), "Only JPG or JPEG files are allowed.");
-                        return View(viewModel);
-                    }
-                    if (imageFile.Length > 2 * 1024 * 1024) // 2MB in bytes
-                    {
-                        ModelState.AddModelError(nameof(user.ImageFile), "File size must not exceed 2MB.");
-                        return View(viewModel);
-                    }
-                    
                     // Save the uploaded image file
                     string uploadsFolder = Path.Combine(_environment.WebRootPath, "images");
                     string uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
@@ -95,14 +84,14 @@ namespace karnaCrud.Controllers
                     }
                     user.ImagePath = "/images/" + uniqueFileName;
                 }
-                else if(existingUser != null)
+                else if (existingUser != null)
                 {
                     user.ImagePath = existingUser.ImagePath; //Preserve the existing image path if no new image is uploaded
                 }
                 user.Hobbies = hobbies.ToList();
                 user.Email = user.Email.ToLower();
 
-                if (user.ID==0)
+                if (user.ID == 0)
                 {
                     if (!IsEmailAvailable(user.Email, null))
                     {
@@ -112,8 +101,8 @@ namespace karnaCrud.Controllers
                     user.ID = ++nextId;
                     userList.Add(user);
                 }
-               else
-               {
+                else
+                {
                     if (existingUser != null)
                     {
                         if (existingUser.Email.ToLower() != user.Email)
@@ -133,9 +122,9 @@ namespace karnaCrud.Controllers
                         existingUser.Designation = user.Designation;
                         existingUser.Hobbies = user.Hobbies;
                         existingUser.ImagePath = user.ImagePath;
-                        existingUser.CountryId=user.CountryId;
-                        existingUser.StateId=user.StateId;
-                        existingUser.CityId=user.CityId;
+                        existingUser.CountryId = user.CountryId;
+                        existingUser.StateId = user.StateId;
+                        existingUser.CityId = user.CityId;
                     }
                 }
                 return RedirectToAction("Index");
@@ -143,17 +132,17 @@ namespace karnaCrud.Controllers
             else
             {
                 return View(viewModel);
-            }           
+            }
         }
         public bool IsEmailAvailable(string email, int? id)
         {
             return !userList.Any(u => u.Email.ToLower() == email.ToLower() && u.ID != id.Value);
         }
 
-        public JsonResult isPhoneAvailable(string phone,int? id)
+        public JsonResult isPhoneAvailable(string phone, int? id)
         {
             bool isAvailable;
-            isAvailable=!userList.Any(u => u.Phone == phone && u.ID !=id.Value);
+            isAvailable = !userList.Any(u => u.Phone == phone && u.ID != id.Value);
             return Json(isAvailable);
         }
 
@@ -184,7 +173,7 @@ namespace karnaCrud.Controllers
         [HttpPost]
         public IActionResult Edit(UserModel model)
         {
-            return RedirectToAction("Form",new {id=model.ID});
+            return RedirectToAction("Form", new { id = model.ID });
         }
 
     }

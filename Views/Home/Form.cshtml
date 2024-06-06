@@ -46,6 +46,7 @@
                     success: function (cities) {
                         $('#cityDropdown').empty().append($('<option>').val('').text('Select City'));
                         $.each(cities, function (i, city) {
+                            console.log("State", cities);
                             $('#cityDropdown').append($('<option>').val(city.id).text(city.name));
                         });
                         $('#cityDropdown').prop('disabled', false);
@@ -91,6 +92,7 @@
             @Html.TextBoxFor(m => m.User.Name, new { @class = "form-control", pattern = "[A-Za-z]+", placeholder = "Enter your name" })
             @Html.ValidationMessageFor(m => m.User.Name, "", new { @class = "invalid-feedback" })
         </div>
+
 
         <div class="mb-3 col-sm-4">
             <label for="Email" class="form-label">Email: </label>
@@ -193,4 +195,3 @@
         <input type="submit" class="btn btn-primary" value="Submit" />
     </form>
 </div>
-
